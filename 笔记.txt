@@ -1,0 +1,15 @@
+基本格式：涉及GitHub的 git xx 不涉及的直接写
+./.. 返回上一级
+git add 文件名/.  添加文件名/全部的改动到git
+git status 查看修改状态
+git commit -m "feat: HTML5UPテンプレート追加" 添加修改记录
+git push origin main 上传记录到GitHub
+
+commit message 写法：以后所有 commit 都建议用"约定式提交"格式：
+feat: 新功能（feature）
+fix: 修复 bug
+docs: 文档变更
+style: 样式变更
+refactor: 重构
+test: 测试相关
+chore: 杂项

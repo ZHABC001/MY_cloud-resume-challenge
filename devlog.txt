@@ -1,0 +1,15 @@
+### やったこと
+- GitHub アカウント作成
+- リポジトリ作成
+- SSH キー設定
+- HTML5UP テンプレート選定（Identity）
+
+### 学んだこと
+- Git の基本的な workflow
+- SSH 公開鍵認証の仕組み
+- ターミナルにおけるペースト時の制御文字混入問題と解決策:Shift + Insert or Paste
+- Git Bash環境でのWindowsパスの適切なエスケープ処理  cd 'C:\Users\~'
+
+### 明日やること
+- HTML 简历内容修改
+- CSS 调整
