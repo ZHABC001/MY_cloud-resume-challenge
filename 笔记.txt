@@ -2,8 +2,10 @@
 ./.. 返回上一级
 git add 文件名/.  添加文件名/全部的改动到git
 git status 查看修改状态
-git commit -m "feat: HTML5UPテンプレート追加" 添加修改记录
+git commit -m "feat: HTML5UPテンプレート追加" 在上传之前的必要步骤：添加修改记录
 git push origin main 上传记录到GitHub
+code .
+
 
 commit message 写法：以后所有 commit 都建议用"约定式提交"格式：
 feat: 新功能（feature）
@@ -13,3 +15,7 @@ style: 样式变更
 refactor: 重构
 test: 测试相关
 chore: 杂项
+
+
+
+git config --global core.quotepath false 命令。这条命令执行后不会有任何成功提示，但它能在底层彻底关闭中文转义。以后当你再次使用 git status 查看状态时，所有的中文和日文文件名就都能清晰正常地显示了。
