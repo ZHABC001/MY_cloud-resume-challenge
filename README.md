@@ -38,3 +38,17 @@ The Cloud Resume Challenge を AWS で実装。SRE の観点から
 
 プロジェクトの足跡として、2026年5月2日に開発を正式に始動し、ローカル環境の構築および GitHub 上でのリポジトリセットアップを完了させました。今後は、フロントエンドの静的ホスティング基盤の構築、Terraform によるインフラのコード化、そして継続的インテグレーション（CI）パイプラインの統合へと段階的に進めていく計画です。
 
+
+
+
+
+\- 2026/05/04: AWS S3 静的ウェブサイトホスティング設定完了
+
+&#x20;             - S3 バケット作成（東京リージョン）
+
+&#x20;             - バケットポリシーで公開読み取り権限設定
+
+&#x20;             - Standard Tag 付与（Project, Environment, Owner）
+
+&#x20;             - サイトhttp://resume.zhangbeichuan.s3-website-ap-northeast-1.amazonaws.com
+

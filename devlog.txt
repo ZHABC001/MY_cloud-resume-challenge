@@ -13,3 +13,117 @@
 ### 明日やること
 - HTML 简历内容修改
 - CSS 调整
+
+# 開発ログ (Development Log)
+
+## 2026/05/02 (金) - Day 1: プロジェクト立ち上げ
+
+### やったこと
+- GitHub アカウント作成および Student Developer Pack 申請
+- リポジトリ `MY_cloud-resume-challenge` を作成（Public、MIT License）
+- Git for Windows をインストール、ユーザー設定完了
+- SSH キー（ed25519）を生成し、GitHub に登録
+  - 認証テスト `ssh -T git@github.com` 成功
+- ローカルにリポジトリを clone
+  - パス: `C:\Users\qingf\Desktop\作业\应聘\git\Projects\MY_cloud-resume-challenge`
+- HTML テンプレート `startbootstrap-resume-gh-pages` を選定し配置
+- 初回 commit + push を完了
+
+### つまずいた点
+- （ここに自分が遭遇した問題を記入）
+
+### 学んだこと
+- Git の基本ワークフロー（add → commit → push）
+- SSH 公開鍵認証の仕組み
+- Conventional Commits 形式（feat / fix / docs / etc.）
+- GitHub の Public / Private リポジトリの違い
+- 履歴書サイトに Bootstrap ベーステンプレートを使う利点
+
+### 明日やること
+- HTML テンプレートの内容を自分の経歴に書き換え
+- セクションごとの調整（About, Projects, Education, Skills, Interests, Certifications）
+
+---
+
+## 2026/05/03 (土) - Day 2: 履歴書コンテンツ作成
+
+### やったこと
+- `index.html` を `ZHANG_BEICHUAN_Cloud_Resume.html` にリネーム
+- 全セクションのコンテンツを日本語で書き換え:
+  - About: 自己紹介文（建築工学から IT 転身、AWS SAA、観察力・計画力）
+  - Projects: Cloud Resume Challenge + マルチクラウド MTD 研究
+  - Education: 大学院、語学学校、本科、高校の 4 段階
+  - Skills: 技術スタック / 技術詳細 / 言語能力（日本語統一）
+  - Interests: 料理趣味
+  - Certifications: AWS SAA, JLPT N2, TOEIC 840（取得年月付き）
+- Navigation の項目を日本語化（自己紹介、プロジェクト、学歴、スキル、興味、資格）
+- Navbar の背景色を AWS ブランドカラー `#232F3E` にカスタマイズ
+- Social icons を整理し、GitHub のみ表示
+  - `target="_blank"` および `rel="noopener noreferrer"` でセキュリティ対策
+- 個人情報（住所、電話番号）を削除
+- 誤字修正（クラウト → クラウド）
+- 各種スタイル調整（margin, 図標統一、Trophy アイコン適用）
+
+### つまずいた点
+- Languages リストで `fa-ul` を使ったが、図標を入れ忘れて表示が崩れた
+- Skills の小見出しを「技術スタック」に変更したが、他の英語小見出しと不統一になった
+- → 全て日本語に統一して解決
+
+### 学んだこと
+- HTML の基本構造（`<head>`, `<body>`, `<section>`）
+- セマンティック要素の意義（`<section id="...">` によるアンカーリンク）
+- Bootstrap のユーティリティクラス（`mb-5`, `d-flex`, `flex-md-row`, `text-primary`）
+- Font Awesome 図標の使い方（`fab fa-aws`, `fas fa-trophy text-warning` など）
+- `target="_blank"` 使用時に `rel="noopener noreferrer"` を併記する理由（セキュリティ対策）
+- Public リポジトリには個人情報を載せない重要性
+
+### 明日やること
+- AWS S3 の静的ウェブサイトホスティングを設定
+- ファイルをアップロードして公開アクセスを設定
+
+---
+
+## 2026/05/04 (日) - Day 3: AWS S3 静的サイトホスティング
+
+### やったこと
+- AWS Billing Alert を設定（月額 $1 で通知）
+- S3 バケットを作成
+  - バケット名: `resume.zhangbeichuan`
+  - リージョン: `ap-northeast-1`（東京）
+  - パブリックアクセスブロックを解除（ウェブサイト用途のため）
+- 履歴書ファイル一式をアップロード:
+  - `ZHANG_BEICHUAN_Cloud_Resume.html`
+  - `assets/`, `css/`, `js/` フォルダ
+- 静的ウェブサイトホスティングを有効化
+  - インデックスドキュメント設定
+- バケットポリシーで公開読み取り権限を付与（`s3:GetObject` for `Principal: *`）
+- Standard Tag を付与:
+  - `Project: cloud-resume-challenge`
+  - `Environment: production`
+  - `Owner: zhang`
+- ブラウザから S3 ウェブサイトエンドポイント経由でアクセスを確認
+
+### つまずいた点
+- （ここに自分が遭遇した問題を記入）
+
+### 学んだこと
+- S3 のオブジェクトストレージとしての仕組み
+- 静的ウェブサイトホスティング機能の使い方
+- パブリックアクセスブロックとバケットポリシーの関係性
+  - 「ブロック解除」だけでは公開されない、ポリシーで明示的に許可が必要
+- バケットポリシーの JSON 構文（Effect, Principal, Action, Resource）
+- リージョン選定の重要性（東京リージョン: 日本のユーザーへの低レイテンシ）
+- AWS リソースに Standard Tag を付ける SRE のベストプラクティス
+  - コスト追跡、所有者明確化、環境管理に有用
+- S3 ウェブサイトエンドポイントは HTTP のみ対応（HTTPS は CloudFront が必要）
+
+### 課題・改善点
+- S3 直接エンドポイントは HTTP のため、明日 CloudFront で HTTPS 化が必要
+- 現状はキャッシュなし、CloudFront でグローバル配信を最適化したい
+
+### 明日やること
+- CloudFront ディストリビューションを作成
+- HTTPS 化を実現
+- S3 を CloudFront 専用に切り替え（OAI/OAC でセキュリティ強化）
+
+---
