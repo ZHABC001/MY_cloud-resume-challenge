@@ -127,3 +127,74 @@
 - S3 を CloudFront 専用に切り替え（OAI/OAC でセキュリティ強化）
 
 ---
+
+## 2026/05/08 (木) - Day 5: API Gateway + フロントエンド連携
+
+### やったこと
+- API Gateway HTTP API 作成
+  - 名前: cloud-resume-api
+  - ルート: GET /counter
+  - Lambda 関数 cloud-resume-counter と統合
+- CORS 設定
+  - Allow-Origin: *（応急版、本番では絞る予定）
+  - Allow-Methods: GET, OPTIONS
+  - Allow-Headers: content-type
+- フロントエンド側に訪問者カウンター実装
+  - HTML の About セクションに表示位置追加
+  - JavaScript の fetch() で API 呼び出し
+  - エラーハンドリング（catch + N/A 表示）
+- S3 にアップロードし、動作確認
+- 全体の通信フローを検証成功
+
+### つまずいた点
+- ローカル file:// で HTML を開いた時に CORS エラー
+  - origin が 'null' になり、API Gateway が拒否
+  - 解決: S3 にアップロードして http:// URL でアクセス
+
+- API URL に /counter を付け忘れて 404
+  - 解決: 完全な URL を確認
+
+### 学んだこと
+- API Gateway HTTP API vs REST API の違い
+  - HTTP API: シンプル、安い ($1/100万リクエスト)
+  - REST API: 高機能、$3.50/100万リクエスト
+- Same-Origin Policy と CORS のしくみ
+  - ブラウザのセキュリティメカニズム
+  - 異なるオリジン間の通信を制御
+- OPTIONS preflight リクエストの重要性
+  - 実際の GET リクエストの前に送られる
+  - これが失敗すると本番リクエストも失敗
+- file:// と http:// で origin の扱いが違う
+  - file:// → origin = 'null'
+  - http:// → origin = 実際の URL
+- fetch() API の使い方
+  - Promise チェーン (.then / .catch)
+  - レスポンス検証 (response.ok)
+
+### 完成したシステム
+End-to-end で動作する web アプリケーションを構築:
+
+[ブラウザ]
+   ↓ HTTP GET
+[S3 静的サイト] (HTML/CSS/JS)
+   ↓ JS が fetch
+[API Gateway] (CORS 設定済み)
+   ↓ Lambda 呼び出し
+[Lambda Function] (Python)
+   ↓ DynamoDB 操作
+[DynamoDB] (Atomic Counter)
+   ↓ Updated count を返す
+[ブラウザ] 訪問者数を表示 🎉
+
+### 課題・改善点
+- CORS Allow-Origin を具体的なドメインに絞る（本番）
+- CloudWatch Alarm でエラー監視（明日実施）
+- Lambda レイテンシ監視
+- DynamoDB スロットリング監視
+- 構造化ログ (logging モジュール) への移行
+
+### 明日やること
+- CloudFront 設定（アカウント検証完了次第）
+- ACM 証明書申請
+- カスタムドメイン関連付け
+- CloudWatch Alarm 設定
