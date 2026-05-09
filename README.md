@@ -1,244 +1,145 @@
-# 📐 アーキテクチャ
+# Cloud Resume Challenge - SRE Edition
 
-# 
+ビズメイツ向けエンジニア職応募作品
 
-# &#x20;全体構成
+## 概要
 
-# 
+The Cloud Resume Challenge を AWS 上で実装したプロジェクト。
+SRE / インフラエンジニアの観点から、可観測性とコスト最適化を意識した設計。
 
-# !\[Full Architecture](docs/architecture-full.png)
+**Live Demo**:
 
-# 
+* HTTP: http://resume.zhangbeichuan.s3-website-ap-northeast-1.amazonaws.com
+* HTTPS: https://zhabc001.me （CloudFront 設定後追加予定）
 
-# &#x20;データフロー
+## アーキテクチャ
 
-# 
+```
+\[ブラウザ]
+    |
+    | HTTPS
+    v
+\[CloudFront] <-- ACM SSL 証明書
+    |  (HTTPS 終端 + CDN)
+    | OAC
+    v
+\[S3 Bucket: resume.zhangbeichuan]
+   (HTML / CSS / JS)
 
-# !\[Data Flow](docs/architecture-flow.png)
 
-# 
+JS が動的に呼び出し:
 
-# &#x20;🌟 概要
+\[ブラウザ JS]
+    |
+    | fetch (CORS)
+    v
+\[API Gateway: GET /counter]
+    |
+    v
+\[Lambda: cloud-resume-counter] <-- IAM Role (最小権限)
+    |
+    v
+\[DynamoDB: cloud-resume-counter]
+   (Atomic Counter)
 
-# 
+監視: CloudWatch Logs + Alarms
+```
 
-# The Cloud Resume Challenge を AWS 上で実装したプロジェクト。
+## 使用技術
 
-# SRE / インフラエンジニアの観点から、可観測性とコスト最適化を意識した設計。
+|カテゴリ|技術|
+|-|-|
+|Cloud|AWS (S3, Lambda, DynamoDB, API Gateway, CloudWatch, IAM)|
+|Frontend|HTML, CSS, JavaScript|
+|Backend|Python 3.12|
+|IaC|Terraform (追加予定)|
+|CI/CD|GitHub Actions (追加予定)|
+|DNS|Namecheap|
 
-# 
+## 機能
 
-# ライブデモ:
+### 実装済み
 
-# \- HTTP: http://resume.zhangbeichuan.s3-website-ap-northeast-1.amazonaws.com
+* HTML/CSS による履歴書ページ
+* S3 静的ウェブサイトホスティング
+* DynamoDB による訪問者カウンター
+* Lambda + API Gateway による REST API
+* CORS 設定によるフロント・バック連携
+* IAM 最小権限ポリシー
+* CloudWatch Logs (保持期間 7 日)
 
-# \- HTTPS: https://zhabc001.me（CloudFront 設定後追加予定）
+### 実装中・予定
 
-# 
+* CloudFront による HTTPS 化 (AWS アカウント検証待ち)
+* カスタムドメイン (zhabc001.me) の関連付け
+* CloudWatch Alarm によるエラー監視
+* Terraform による Infrastructure as Code 化
+* pytest + moto による Lambda 単体テスト
+* GitHub Actions による CI/CD パイプライン
 
-# &#x20;🛠️ 使用技術
+## SRE 観点での設計考慮事項
 
-# 
+### 可観測性
 
-# | カテゴリ | 技術 |
+* CloudWatch Logs による Lambda 実行ログ
+* ログ保持期間 7 日 (コスト最適化)
+* CloudWatch Alarm によるエラー率監視 (実装予定)
 
-# |---------|------|
+### コスト最適化
 
-# | Cloud | AWS (S3, Lambda, DynamoDB, API  Gateway,CloudWatch, IAM) |
+* AWS Always Free Tier の最大活用
+* 全リソースに Standard Tag 付与
+* 月額予算アラート設定 ($1)
+* 結果: 月額 0 円で運用
 
-# | Frontend | HTML, CSS, JavaScript |
+### セキュリティ
 
-# | Backend | Python 3.12 |
+* IAM 最小権限の原則
+* DynamoDB atomic counter による並行アクセス対策
+* CORS による Cross-Origin 制御
 
-# | IaC | Terraform（追加予定） |
+## 技術的こだわりポイント
 
-# | CI/CD | GitHub Actions（追加予定） |
+### DynamoDB Atomic Counter
 
-# | DNS | Namecheap |
+ADD operation を使い、複数のユーザーが同時にアクセスしても
+race condition なく count が正確にインクリメントされる。
 
-# 
+### Lambda パフォーマンス最適化
 
-# &#x20;🎯 機能
+boto3 クライアントを関数外で初期化し、ウォームスタート時の
+初期化コストを削減。レスポンス時間を 5-10 倍速く実現。
 
-# 
+### IAM 最小権限
 
-# \- ✅ HTML/CSS による履歴書ページ
+AmazonDynamoDBFullAccess から、特定テーブルへの UpdateItem のみ
+許可するカスタムポリシーに変更。
 
-# \- ✅ S3 静的ウェブサイトホスティング
+## 開発記録
 
-# \- ✅ DynamoDB による訪問者カウンター
+詳細な開発ログは [DEVLOG.md](DEVLOG.md) を参照。
 
-# \- ✅ Lambda + API Gateway による REST API
+## 今後の改善計画
 
-# \- ✅ CORS 設定による CDN-Backend 連携
+* \[ ] CloudFront による HTTPS 化
+* \[ ] カスタムドメイン関連付け
+* \[ ] CloudWatch Alarm 設定
+* \[ ] Terraform 化
+* \[ ] pytest 単体テスト
+* \[ ] GitHub Actions CI/CD
+* \[ ] Lambda 構造化ログ
+* \[ ] X-Ray 分散トレーシング (中期)
+* \[ ] AWS WAF (中期)
 
-# \- 🚧 CloudFront による HTTPS 化（AWS アカウント検証待ち）
+## 作者
 
-# \- 🚧 カスタムドメイン (zhabc001.me) 関連付け（同上）
+**張 北川 (ZHANG BEICHUAN)**
 
-# \- ⏳ Terraform による Infrastructure as Code 化
+* 千葉工業大学 大学院 マネジメント工学専攻 (2027 年 3 月卒予定)
+* AWS Certified Solutions Architect - Associate
+* GitHub: [@ZHABC001](https://github.com/ZHABC001)
 
-# \- ⏳ GitHub Actions による CI/CD パイプライン
+## ライセンス
 
-# \- ⏳ CloudWatch Alarm によるエラー監視
-
-# 
-
-# &#x20; SRE 観点での設計考慮事項
-
-# 
-
-# &#x20;可観測性 (Observability)
-
-# \- CloudWatch Logs による Lambda 実行ログ
-
-# \- 構造化ログによるエラー追跡（実装中）
-
-# \- CloudWatch Alarm によるエラー率監視（実装予定）
-
-# 
-
-# \### コスト最適化
-
-# \- AWS Always Free Tier の最大活用
-
-# &#x20; - Lambda: 100万リクエスト/月（永続無料）
-
-# &#x20; - DynamoDB: 25GB ストレージ（永続無料）
-
-# &#x20; - CloudFront: 1TB 流量/月（永続無料）
-
-# \- 全リソースに Standard Tag 付与によるコスト追跡
-
-# \- 月額予算アラート設定（$1）
-
-# 
-
-# &#x20;セキュリティ
-
-# \- IAM 最小権限の原則
-
-# \- DynamoDB atomic counter による並行アクセス対策
-
-# \- CORS 設定によるクロスオリジン制御
-
-# \- OAC による S3 バケットの保護（CloudFront 設定後）
-
-# 
-
-# 💡 技術的こだわりポイント
-
-# 
-
-# &#x20;1. DynamoDB Atomic Counter
-
-# &#x20; python
-
-# table.update\_item(
-
-# &#x20;   Key={'id': 'visitor\_count'},
-
-# &#x20;   UpdateExpression='ADD #count :inc',
-
-# &#x20;   ExpressionAttributeNames={'#count': 'count'},
-
-# &#x20;   ExpressionAttributeValues={':inc': 1},
-
-# &#x20;   ReturnValues='UPDATED\_NEW'
-
-# )
-
-# ```
-
-# ADD operation を使い、race condition を回避。
-
-# 
-
-# &#x20;2. Lambda パフォーマンス最適化
-
-# boto3 クライアントを関数外で初期化し、ウォームスタート時の
-
-# 初期化コストを削減。
-
-# 
-
-# &#x20;3. CORS 設定
-
-# \- API Gateway 側で OPTIONS preflight 対応
-
-# \- Lambda レスポンスにも CORS Headers 設定（多層防御）
-
-# 
-
-# &#x20;📝 開発ログ
-
-# 
-
-# 詳細な開発ログは \[DEVLOG.md](DEVLOG.md) を参照。
-
-# 
-
-# &#x20;🚀 今後の改善計画
-
-# 
-
-# \- \[ ] CloudFront による HTTPS 化（カスタムドメイン）
-
-# \- \[ ] Terraform による全リソースの IaC 化
-
-# \- \[ ] pytest + moto による Lambda 単体テスト
-
-# \- \[ ] GitHub Actions による CI/CD パイプライン
-
-# \- \[ ] CloudWatch Alarm + SNS によるエラー通知
-
-# \- \[ ] Lambda 構造化ログへの移行
-
-# \- \[ ] AWS WAF によるセキュリティ強化（コスト次第）
-
-# \- \[ ] X-Ray による分散トレーシング
-
-# 
-
-# &#x20;📊 学んだこと
-
-# 
-
-# このプロジェクトを通じて学んだ主な技術:
-
-# 
-
-# \- AWS: S3, Lambda, DynamoDB, API Gateway, IAM, CloudWatch
-
-# \- Python: boto3, エラーハンドリング, Lambda 関数開発
-
-# \- Web: HTML/CSS, JavaScript fetch API, CORS, HTTP プロトコル
-
-# \- DevOps: Git, GitHub, Conventional Commits
-
-# \- SRE 観点: 可観測性、コスト最適化、最小権限の原則
-
-# 
-
-# \## 👤 作者
-
-# 
-
-# 張 北川 (ZHANG BEICHUAN)\*\*
-
-# \- 千葉工業大学 大学院 マネジメント工学専攻 (2027年3月卒予定)
-
-# \- AWS Certified Solutions Architect - Associate
-
-# \- GitHub: \[@ZHABC001](https://github.com/ZHABC001)
-
-# \- Email: qingfengtiansuo@gmail.com
-
-# 
-
-# \## 📄 ライセンス
-
-# 
-
-# MIT License
+MIT License
 
