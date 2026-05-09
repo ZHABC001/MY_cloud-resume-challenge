@@ -6,7 +6,7 @@
 
 # 
 
-# !\[Full Architecture](assets/architecture-full.png)
+# ![Full Architecture](assets/architecture-full.png)
 
 # 
 
@@ -14,7 +14,7 @@
 
 # 
 
-# !\[Data Flow](assests/architecture-flow.png)
+# ![Data Flow](assets/architecture-flow.png)
 
 # 
 
