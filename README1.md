@@ -6,7 +6,7 @@
 
 # 
 
-# !\[Full Architecture](assets/architecture-full.png)
+# ![Full Architecture](assets/architecture-full.png)
 
 # 
 
