@@ -193,8 +193,76 @@ End-to-end で動作する web アプリケーションを構築:
 - DynamoDB スロットリング監視
 - 構造化ログ (logging モジュール) への移行
 
-### 明日やること
-- CloudFront 設定（アカウント検証完了次第）
-- ACM 証明書申請
-- カスタムドメイン関連付け
-- CloudWatch Alarm 設定
+
+## 2026/05/10 (土) - Day 7: pytest + GitHub Actions
+
+### やったこと
+
+#### Lambda コードの整理
+- backend/ ディレクトリ構成を作成
+  - backend/lambda/lambda_function.py (Lambda コード)
+  - backend/tests/test_lambda_function.py (テストコード)
+  - backend/tests/conftest.py (pytest 共通設定)
+
+#### pytest 単体テスト実装
+- moto による AWS DynamoDB のモック化
+- 5 つのテストケース実装:
+  1. 初回アクセスで count=1
+  2. 複数回アクセスのインクリメント
+  3. CORS ヘッダーの存在
+  4. Content-Type が JSON
+  5. count が int 型 (Decimal ではない)
+- ローカルで全テスト合格確認
+
+#### GitHub Actions CI/CD
+- .github/workflows/test.yml 作成
+- main ブランチへの push で自動テスト実行
+- backend/ 配下の変更時のみトリガー (paths filter)
+- pip キャッシュで実行時間短縮
+- Push 後、GitHub Actions で全テスト合格確認
+
+#### その他
+- .gitignore 作成 (venv, __pycache__ 等を除外)
+
+### つまずいた点
+- (実際遇到的写这里)
+
+### 学んだこと
+
+#### テスト関連
+- pytest の基本構造 (test_ プレフィックス、fixture)
+- moto によるユニットテストの書き方
+  - @mock_aws で AWS サービスをモック化
+  - 実際の AWS にアクセスせずテスト可能
+- フィクスチャー (@pytest.fixture) で共通セットアップ
+- テスト命名規則 (test_期待される結果を明示)
+
+#### CI/CD 関連
+- GitHub Actions の YAML 構文
+- ワークフロートリガー (push, pull_request, paths)
+- アクションの使用 (checkout, setup-python, cache)
+- 依存関係のキャッシング戦略
+- secrets 管理（次フェーズで AWS デプロイ時に使う）
+
+### SRE 観点での価値
+
+#### Shift Left (テストを早く書く)
+- 開発初期からテスト = バグの早期発見
+- テストカバレッジの可視化
+
+#### 自動化
+- 手動でのテスト実行 → 完全自動化
+- 人為ミスの削減
+- 高速フィードバックループ
+
+#### 信頼性
+- 5 つのテストケースで主要パスをカバー
+- リグレッション (退化) を防止
+- リファクタリング時の安心感
+
+### 課題・改善点
+- テストカバレッジを測定 (pytest-cov)
+- 異常系テストの追加 (DynamoDB エラー時)
+- 統合テスト (API Gateway 経由)
+- パフォーマンステスト
+
