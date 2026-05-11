@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+.venv/
+env/
+.env
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/*.tfvars
+terraform/*.tfvars.json
+terraform/lambda_function.zip
+*.tfplan
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 备份
+*.bak
+*.backup
+*.backup.md
+
+# AWS
+.aws/
+*.pem
+*.ppk
