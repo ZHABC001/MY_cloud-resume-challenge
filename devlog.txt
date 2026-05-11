@@ -16,7 +16,7 @@
 
 # 開発ログ (Development Log)
 
-## 2026/05/02 (金) - Day 1: プロジェクト立ち上げ
+## 2026/05/02  - Day 1: プロジェクト立ち上げ
 
 ### やったこと
 - GitHub アカウント作成および Student Developer Pack 申請
@@ -45,7 +45,7 @@
 
 ---
 
-## 2026/05/03 (土) - Day 2: 履歴書コンテンツ作成
+## 2026/05/03  - Day 2: 履歴書コンテンツ作成
 
 ### やったこと
 - `index.html` を `ZHANG_BEICHUAN_Cloud_Resume.html` にリネーム
@@ -83,7 +83,7 @@
 
 ---
 
-## 2026/05/04 (日) - Day 3: AWS S3 静的サイトホスティング
+## 2026/05/04  - Day 3: AWS S3 静的サイトホスティング
 
 ### やったこと
 - AWS Billing Alert を設定（月額 $1 で通知）
@@ -128,7 +128,7 @@
 
 ---
 
-## 2026/05/08 (木) - Day 5: API Gateway + フロントエンド連携
+## 2026/05/08  - Day 5: API Gateway + フロントエンド連携
 
 ### やったこと
 - API Gateway HTTP API 作成
@@ -194,7 +194,7 @@ End-to-end で動作する web アプリケーションを構築:
 - 構造化ログ (logging モジュール) への移行
 
 
-## 2026/05/10 (土) - Day 7: pytest + GitHub Actions
+## 2026/05/10  - Day 7: pytest + GitHub Actions
 
 ### やったこと
 
@@ -265,4 +265,62 @@ End-to-end で動作する web アプリケーションを構築:
 - 異常系テストの追加 (DynamoDB エラー時)
 - 統合テスト (API Gateway 経由)
 - パフォーマンステスト
+
+## 2026/05/11  - Day 8: Terraform IaC 化
+
+### やったこと
+
+#### Phase 1: 環境準備
+- Terraform v1.x をインストール
+- AWS CLI 認証情報を設定
+- terraform/ ディレクトリ構成を作成
+  - main.tf (リソース定義)
+  - variables.tf (変数定義)
+  - outputs.tf (出力定義)
+
+#### Phase 2: S3 リソースを IaC 化
+- S3 バケット、静的ホスティング、公開設定、バケットポリシー
+- terraform import で既存リソースを取り込み
+- terraform apply で ManagedBy タグを追加
+
+#### Phase 3: DynamoDB を IaC 化
+- visitor_counter テーブル定義
+- billing_mode: PAY_PER_REQUEST
+
+#### Phase 4: Lambda + IAM を IaC 化
+- IAM Role (lambda 信頼ポリシー)
+- IAM Policy (最小権限: dynamodb:UpdateItem のみ)
+- Lambda Function (data archive_file で自動 zip 化)
+- CloudWatch Logs Group (retention 7 日)
+
+#### 合計 12 個の AWS リソースを IaC 化
+
+### 学んだこと
+- Terraform 基本概念 (Provider, Resource, Data, Variables, Outputs)
+- terraform init / plan / apply / destroy / import
+- default_tags + ManagedBy = Terraform でリソース管理
+- リソース間参照 (aws_dynamodb_table.visitor_counter.arn)
+- terraform import で既存リソースの取り込み
+
+### つまずいた点
+- archive provider 追加時の init -upgrade 必要
+- PowerShell では \ 続行が機能せず、Git Bash 推奨
+- IAM Role の手動作成時のタグ誤字 ("Project " 末尾空白)
+- Lambda Runtime のドリフト (3.14 vs 3.12)
+
+### SRE 観点での価値
+- Infrastructure as Code による再現性確保
+- バージョン管理 (Git) でインフラ変更履歴
+- 手動操作のミス削減
+- レビュー可能性 (PR)
+
+### 課題・改善点
+- API Gateway の IaC 化 (明日)
+- terraform.tfstate の S3 backend 化 (チーム開発標準)
+- terraform workspace で環境分離
+
+### 明日やること
+- API Gateway を IaC 化、もしくは README/架构图完善
+- AWS 工単状況確認
+
 

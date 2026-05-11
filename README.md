@@ -176,6 +176,107 @@
 
 # 
 
+### IaC 化したリソース (12 個)
+
+| リソース種別 | 数 | 内容 |
+|------------|----|----|
+| S3 | 4 | バケット、ホスティング、公開設定、ポリシー |
+| DynamoDB | 1 | visitor_counter テーブル |
+| Lambda | 1 | 訪問者カウンター関数 |
+| IAM | 4 | Role、Policy、Attachment x 2 |
+| CloudWatch Logs | 1 | Lambda 用ロググループ |
+| Archive | 1 | Lambda コード zip パッケージ (data) |
+
+### Terraform の活用ポイント
+
+#### 1. 既存リソースの取り込み (terraform import)
+
+手動で作成済みの AWS リソースを、`terraform import` で
+段階的に Terraform 管理下に移行しました。
+
+```bash
+terraform import aws_s3_bucket.resume resume.zhangbeichuan
+terraform import aws_dynamodb_table.visitor_counter cloud-resume-counter
+terraform import aws_lambda_function.resume_counter cloud-resume-counter
+# ...
+```
+
+これにより、既存の本番リソースを再作成するリスクなく、
+IaC 化を実現できました。
+
+#### 2. デフォルトタグによる一元管理
+
+```hcl
+provider "aws" {
+  default_tags {
+    tags = {
+      Project     = var.project_name
+      Environment = var.environment
+      Owner       = var.owner
+      ManagedBy   = "Terraform"
+    }
+  }
+}
+```
+
+全リソースに `ManagedBy = Terraform` タグを自動付与。
+手動変更を防ぎ、リソース管理を統一しました。
+
+#### 3. リソース間参照
+
+```hcl
+resource "aws_iam_policy" "lambda_dynamodb_counter" {
+  policy = jsonencode({
+    Statement = [{
+      Resource = aws_dynamodb_table.visitor_counter.arn
+      # ↑ DynamoDB テーブルの ARN を直接参照
+    }]
+  })
+}
+```
+
+ARN をハードコードせず、リソース参照で動的に解決。
+環境依存を最小化しました。
+
+#### 4. 自動コードパッケージング
+
+```hcl
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "${path.module}/../backend/lambda/lambda_function.py"
+  output_path = "${path.module}/lambda_function.zip"
+}
+```
+
+Lambda コード変更時、Terraform が自動的に zip 再作成。
+`source_code_hash` で変更検知し、必要時のみデプロイされます。
+
+### 使い方
+
+```bash
+cd terraform
+
+# 初期化
+terraform init
+
+# 変更プレビュー
+terraform plan
+
+# 適用
+terraform apply
+
+# 全リソース削除 (注意!)
+terraform destroy
+```
+
+### 今後の改善計画
+
+- [ ] terraform.tfstate を S3 backend + DynamoDB lock で管理
+- [ ] terraform workspace で環境分離 (dev/staging/prod)
+- [ ] API Gateway を IaC 化 (現在は手動)
+- [ ] CI/CD パイプラインで terraform plan の自動実行
+
+
 # &#x20;📝 開発ログ
 
 # 
