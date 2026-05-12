@@ -38,3 +38,18 @@ output "dynamodb_table_arn" {
   description = "DynamoDB テーブルの ARN"
   value       = aws_dynamodb_table.visitor_counter.arn
 }
+
+output "api_gateway_id" {
+  description = "API Gateway ID"
+  value       = aws_apigatewayv2_api.counter_api.id
+}
+
+output "api_gateway_endpoint" {
+  description = "API Gateway のエンドポイント URL"
+  value       = aws_apigatewayv2_api.counter_api.api_endpoint
+}
+
+output "api_gateway_invoke_url" {
+  description = "訪問者カウンター API の完全な URL"
+  value       = "${aws_apigatewayv2_api.counter_api.api_endpoint}/counter"
+}

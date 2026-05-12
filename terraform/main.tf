@@ -82,6 +82,54 @@ resource "aws_s3_bucket_policy" "resume_public_read" {
 }
 
 # ===========================================
+# S3 Bucket: zhabc001.me 専用 (Cloudflare 経由)
+# ===========================================
+
+resource "aws_s3_bucket" "resume_domain" {
+  bucket = "zhabc001.me"
+}
+
+resource "aws_s3_bucket_website_configuration" "resume_domain" {
+  bucket = aws_s3_bucket.resume_domain.id
+
+  index_document {
+    suffix = "ZHANG_BEICHUAN_Cloud_Resume.html"
+  }
+
+  error_document {
+    key = "ZHANG_BEICHUAN_Cloud_Resume.html"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "resume_domain" {
+  bucket = aws_s3_bucket.resume_domain.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_policy" "resume_domain_public_read" {
+  bucket = aws_s3_bucket.resume_domain.id
+
+  depends_on = [aws_s3_bucket_public_access_block.resume_domain]
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.resume_domain.arn}/*"
+      }
+    ]
+  })
+}
+
+# ===========================================
 # DynamoDB Table: 訪問者カウンター
 # ===========================================
 
@@ -191,3 +239,57 @@ resource "aws_cloudwatch_log_group" "lambda_logs" {
   name              = "/aws/lambda/${aws_lambda_function.resume_counter.function_name}"
   retention_in_days = 7  # コスト最適化のため 7 日間
 }
+
+# ===========================================
+# API Gateway (HTTP API): 訪問者カウンター API
+# ===========================================
+
+# HTTP API 本体
+resource "aws_apigatewayv2_api" "counter_api" {
+  name          = "cloud-resume-api"
+  protocol_type = "HTTP"
+  description   = "訪問者カウンター用の HTTP API"
+
+  cors_configuration {
+    allow_origins = ["*"]
+    allow_methods = ["GET", "OPTIONS"]
+    allow_headers = ["content-type"]
+    max_age       = 0
+  }
+}
+
+# Lambda との統合
+resource "aws_apigatewayv2_integration" "lambda" {
+  api_id           = aws_apigatewayv2_api.counter_api.id
+  integration_type = "AWS_PROXY"
+
+  integration_uri    = aws_lambda_function.resume_counter.invoke_arn
+  integration_method = "POST"
+  payload_format_version = "2.0"
+}
+
+# ルート: GET /counter
+resource "aws_apigatewayv2_route" "get_counter" {
+  api_id    = aws_apigatewayv2_api.counter_api.id
+  route_key = "GET /counter"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+# デフォルトステージ ($default, 自動デプロイ)
+resource "aws_apigatewayv2_stage" "default" {
+  api_id      = aws_apigatewayv2_api.counter_api.id
+  name        = "$default"
+  auto_deploy = true
+}
+
+# Lambda へのアクセス権限 (API Gateway から呼び出せるように)
+resource "aws_lambda_permission" "api_gateway" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.resume_counter.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  # /*/*/* = 任意のステージ、メソッド、パスからの呼び出しを許可
+  source_arn = "${aws_apigatewayv2_api.counter_api.execution_arn}/*/*"
+}
+

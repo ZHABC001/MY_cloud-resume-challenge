@@ -324,3 +324,36 @@ End-to-end で動作する web アプリケーションを構築:
 - AWS 工単状況確認
 
 
+## 2026/05/12  - Day 9: API Gateway IaC + Cloudflare HTTPS
+
+### やったこと
+
+#### Phase 1: API Gateway を IaC 化
+- HTTP API 本体 (cloud-resume-api)
+- Lambda Integration (AWS_PROXY)
+- Route (GET /counter)
+- Stage ($default, auto_deploy)
+- Lambda Permission
+- 既存リソースを terraform import で取り込み
+- terraform apply で default_tags 追加
+
+#### Phase 2: Cloudflare による HTTPS 化
+- Cloudflare Free プラン登録
+- zhabc001.me を Cloudflare に追加
+- Namecheap の NameServer を Cloudflare に変更
+- DNS 設定:
+  - CNAME @ → S3 (Proxied)
+  - CNAME www → S3 (Proxied)
+- SSL/TLS モード: Flexible
+- Always Use HTTPS 有効化
+
+#### Phase 3: S3 桶名問題の解決
+- 当初の 404 NoSuchBucket エラー対応
+- 原因: S3 が Host header で桶名を判定
+  - zhabc001.me という名前の桶を探す → 存在しない
+- 解決: zhabc001.me という名前の S3 桶を新規作成
+- Terraform で IaC 化
+- AWS CLI で旧桶からファイルを同期
+- Cloudflare DNS を新桶に向ける
+
+### 最終的なアーキテクチャ
