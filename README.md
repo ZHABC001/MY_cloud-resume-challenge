@@ -5,7 +5,7 @@
 ![Terraform](https://img.shields.io/badge/Terraform-Managed-7B42BC.svg)
 ![AWS](https://img.shields.io/badge/AWS-S3%20%7C%20Lambda%20%7C%20DynamoDB-FF9900.svg)
 
-ビズメイツ向けエンジニア職応募作品
++ 27 卒 SRE / インフラエンジニア求職用ポートフォリオ
 
 ## 概要
 
