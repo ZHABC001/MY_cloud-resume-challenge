@@ -99,27 +99,27 @@
 
                     <div class="mb-3">
                         <button class="btn btn-outline-primary btn-sm me-2 mb-2 ai-question"
-                                data-answer="This project is my Cloud Resume Challenge portfolio website. It demonstrates my ability to build a serverless resume website using AWS services, frontend development, Python backend logic, and infrastructure automation.">
+                                data-question="What is this Cloud Resume Challenge project?">
                             Project Overview
                         </button>
 
                         <button class="btn btn-outline-primary btn-sm me-2 mb-2 ai-question"
-                                data-answer="This project uses Amazon S3 for static website hosting, CloudFront or CDN for content delivery, API Gateway and Lambda for backend API logic, DynamoDB for the visitor counter, CloudWatch for monitoring, GitHub Actions for CI/CD, and Terraform for infrastructure as code.">
+                                data-question="What AWS services are used in this project?">
                             AWS Architecture
                         </button>
 
                         <button class="btn btn-outline-primary btn-sm me-2 mb-2 ai-question"
-                                data-answer="One of the main challenges was connecting the frontend with the serverless backend securely and reliably. I also learned how to configure API Gateway, Lambda, DynamoDB, CORS, monitoring, and deployment workflows.">
+                                data-question="What was the most difficult technical challenge in this project?">
                             Technical Challenges
                         </button>
 
                         <button class="btn btn-outline-primary btn-sm me-2 mb-2 ai-question"
-                                data-answer="To control cost and security risks, the project uses a serverless architecture, avoids exposing secrets in frontend code, keeps API calls limited, and plans to use request limits and caching when dynamic AI features are added.">
+                                data-question="How did you control cost and security risks in this project?">
                             Cost & Security
                         </button>
 
                         <button class="btn btn-outline-primary btn-sm me-2 mb-2 ai-question"
-                                data-answer="このプロジェクトは、Cloud Resume Challenge をもとに作成したポートフォリオサイトです。S3、API Gateway、Lambda、DynamoDB などの AWS サービスを用いて、静的サイトとサーバーレスな訪問者カウンターを実装しました。また、GitHub Actions や Terraform も活用し、クラウドエンジニアとして必要な基礎力を示すことを目的としています。">
+                                data-question="日本語でこのプロジェクトを面接向けに説明してください。">
                             日本語説明
                         </button>
                     </div>
@@ -282,26 +282,71 @@
         </script>
             <!-- AI Assistant static demo JS -->
         <script>
-            let selectedAnswer = "";
+             const AI_API_URL = 'https://oq25hly377.execute-api.ap-northeast-1.amazonaws.com/ask';
 
-            document.querySelectorAll('.ai-question').forEach(button => {
-                button.addEventListener('click', function () {
-                    selectedAnswer = this.dataset.answer;
-                    document.getElementById('ai-question-input').value = this.textContent.trim();
-                    document.getElementById('ai-answer').textContent = selectedAnswer;
+                document.addEventListener('DOMContentLoaded', function () {
+                    const questionInput = document.getElementById('ai-question-input');
+                    const answerBox = document.getElementById('ai-answer');
+                    const askButton = document.getElementById('ai-ask-button');
+                    const questionButtons = document.querySelectorAll('.ai-question');
+
+                    // 预设问题按钮：点击后把问题放入输入框
+                    questionButtons.forEach(button => {
+                        button.addEventListener('click', function () {
+                            const question = this.dataset.question || this.textContent.trim();
+                            questionInput.value = question;
+                            answerBox.textContent = '質問が入力されました。「Ask AI」をクリックしてください。';
+                        });
+                    });
+
+                    // Ask AI 按钮：调用 API Gateway / Lambda
+                    askButton.addEventListener('click', async function () {
+                        const question = questionInput.value.trim();
+
+                        if (!question) {
+                            answerBox.textContent = '質問を入力してください。';
+                            return;
+                        }
+
+                        if (question.length > 500) {
+                            answerBox.textContent = '質問は500文字以内にしてください。';
+                            return;
+                        }
+
+                        answerBox.textContent = 'Lambda API から回答を取得しています...';
+                        askButton.disabled = true;
+                        askButton.textContent = 'Loading...';
+
+                        try {
+                            const response = await fetch(AI_API_URL, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    question: question
+                                })
+                            });
+
+                            const data = await response.json();
+
+                            if (!response.ok) {
+                                answerBox.textContent = data.error || 'APIエラーが発生しました。';
+                                return;
+                            }
+
+                            answerBox.textContent = data.answer || '回答を取得できませんでした。';
+
+                        } catch (error) {
+                            console.error('AI Assistant error:', error);
+                            answerBox.textContent = '通信エラーが発生しました。時間をおいて再度お試しください。';
+
+                        } finally {
+                            askButton.disabled = false;
+                            askButton.textContent = 'Ask AI';
+                        }
+                    });
                 });
-            });
-
-            document.getElementById('ai-ask-button').addEventListener('click', function () {
-                const answerBox = document.getElementById('ai-answer');
-
-                if (!selectedAnswer) {
-                    answerBox.textContent = 'Please select a question button first.';
-                    return;
-                }
-
-                answerBox.textContent = selectedAnswer;
-            });
         </script>
     </body>
 </html>
