@@ -27,6 +27,7 @@
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">自己紹介</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#projects">プロジェクト</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#ai-assistant">AI Assistant</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#education">学歴</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#skills">スキル</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#interests">興味</a></li>
@@ -81,6 +82,65 @@
                             <p>ゲーム理論を用いたマルチクラウド環境での Moving Target Defense 戦略の研究。セキュリティとコストのトレードオフを最適化する手法を検討中。</p>
                         </div>
                         <div class="flex-shrink-0"><span class="text-primary">2025年9月 - 現在</span></div>
+                    </div>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- AI Assistant-->
+            <section class="resume-section" id="ai-assistant">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">AI Project Assistant</h2>
+
+                    <p class="lead mb-4">
+                        Cloud Resume Challenge、AWS構成、使用技術、面接想定質問について説明するための
+                        AIアシスタント機能です。現在のバージョンでは、コストとセキュリティを考慮し、
+                        事前に用意した回答を表示する静的デモとして実装しています。
+                    </p>
+
+                    <div class="mb-3">
+                        <button class="btn btn-outline-primary btn-sm me-2 mb-2 ai-question"
+                                data-answer="This project is my Cloud Resume Challenge portfolio website. It demonstrates my ability to build a serverless resume website using AWS services, frontend development, Python backend logic, and infrastructure automation.">
+                            Project Overview
+                        </button>
+
+                        <button class="btn btn-outline-primary btn-sm me-2 mb-2 ai-question"
+                                data-answer="This project uses Amazon S3 for static website hosting, CloudFront or CDN for content delivery, API Gateway and Lambda for backend API logic, DynamoDB for the visitor counter, CloudWatch for monitoring, GitHub Actions for CI/CD, and Terraform for infrastructure as code.">
+                            AWS Architecture
+                        </button>
+
+                        <button class="btn btn-outline-primary btn-sm me-2 mb-2 ai-question"
+                                data-answer="One of the main challenges was connecting the frontend with the serverless backend securely and reliably. I also learned how to configure API Gateway, Lambda, DynamoDB, CORS, monitoring, and deployment workflows.">
+                            Technical Challenges
+                        </button>
+
+                        <button class="btn btn-outline-primary btn-sm me-2 mb-2 ai-question"
+                                data-answer="To control cost and security risks, the project uses a serverless architecture, avoids exposing secrets in frontend code, keeps API calls limited, and plans to use request limits and caching when dynamic AI features are added.">
+                            Cost & Security
+                        </button>
+
+                        <button class="btn btn-outline-primary btn-sm me-2 mb-2 ai-question"
+                                data-answer="このプロジェクトは、Cloud Resume Challenge をもとに作成したポートフォリオサイトです。S3、API Gateway、Lambda、DynamoDB などの AWS サービスを用いて、静的サイトとサーバーレスな訪問者カウンターを実装しました。また、GitHub Actions や Terraform も活用し、クラウドエンジニアとして必要な基礎力を示すことを目的としています。">
+                            日本語説明
+                        </button>
+                    </div>
+
+                    <div class="mb-3">
+                        <textarea id="ai-question-input"
+                                  class="form-control"
+                                  rows="3"
+                                  maxlength="500"
+                                  placeholder="Click a question button above. Dynamic AI response will be added in the next version."></textarea>
+                        <div class="form-text">
+                            Day 1 version: static demo only. Dynamic LLM response will be added later.
+                        </div>
+                    </div>
+
+                    <button id="ai-ask-button" class="btn btn-primary">
+                        Show Answer
+                    </button>
+
+                    <div id="ai-answer" class="mt-4 p-3 border rounded bg-light">
+                        Click a question button to see the answer.
                     </div>
                 </div>
             </section>
@@ -218,6 +278,29 @@
                         console.error('Error fetching visitor count:', error);
                         document.getElementById('visitor-count').textContent = 'N/A';
                     });
+            });
+        </script>
+            <!-- AI Assistant static demo JS -->
+        <script>
+            let selectedAnswer = "";
+
+            document.querySelectorAll('.ai-question').forEach(button => {
+                button.addEventListener('click', function () {
+                    selectedAnswer = this.dataset.answer;
+                    document.getElementById('ai-question-input').value = this.textContent.trim();
+                    document.getElementById('ai-answer').textContent = selectedAnswer;
+                });
+            });
+
+            document.getElementById('ai-ask-button').addEventListener('click', function () {
+                const answerBox = document.getElementById('ai-answer');
+
+                if (!selectedAnswer) {
+                    answerBox.textContent = 'Please select a question button first.';
+                    return;
+                }
+
+                answerBox.textContent = selectedAnswer;
             });
         </script>
     </body>
