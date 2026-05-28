@@ -2,16 +2,19 @@
 
 Cloud Resume Challenge プロジェクトの日次開発記録。
 
-開発期間: 2026/05/02 - 2026/05/15
+開発期間: 2026/05/02 - 2026/05/28
 
-\---
+- 初期版: 2026/05/02 - 2026/05/15
+- AI Assistant 拡張: 2026/05/25 - 2026/05/28
+
+---
 
 ## 2026/05/02 (土) - Day 1: プロジェクト立ち上げ
 
 ### やったこと
 
 * GitHub アカウント作成および Student Developer Pack 申請
-* リポジトリ `MY\_cloud-resume-challenge` を作成 (Public、MIT License)
+* リポジトリ `MY_cloud-resume-challenge` を作成 (Public、MIT License)
 * Git for Windows をインストール、ユーザー設定完了
 * SSH キー (ed25519) を生成し、GitHub に登録
 
@@ -33,13 +36,13 @@ Cloud Resume Challenge プロジェクトの日次開発記録。
 * HTML テンプレートの内容を自分の経歴に書き換え
 * セクションごとの調整 (About, Projects, Education, Skills, Interests, Certifications)
 
-\---
+---
 
 ## 2026/05/03 (日) - Day 2: 履歴書コンテンツ作成
 
 ### やったこと
 
-* `index.html` を `ZHANG\_BEICHUAN\_Cloud\_Resume.html` にリネーム
+* `index.html` を `ZHANG_BEICHUAN_Cloud_Resume.html` にリネーム
 * 全セクションのコンテンツを日本語で書き換え:
 
   * About: 自己紹介文 (建築工学から IT 転身、AWS SAA、観察力・計画力)
@@ -52,7 +55,7 @@ Cloud Resume Challenge プロジェクトの日次開発記録。
 * Navbar の背景色を AWS ブランドカラー `#232F3E` にカスタマイズ
 * Social icons を整理し、GitHub のみ表示
 
-  * `target="\_blank"` および `rel="noopener noreferrer"` でセキュリティ対策
+  * `target="_blank"` および `rel="noopener noreferrer"` でセキュリティ対策
 * 個人情報 (住所、電話番号) を削除
 * 誤字修正 (クラウト → クラウド)
 
@@ -69,10 +72,10 @@ Cloud Resume Challenge プロジェクトの日次開発記録。
 * セマンティック要素の意義
 * Bootstrap のユーティリティクラス (`mb-5`, `d-flex`, `flex-md-row`, `text-primary`)
 * Font Awesome 図標の使い方
-* `target="\_blank"` 使用時に `rel="noopener noreferrer"` を併記する理由
+* `target="_blank"` 使用時に `rel="noopener noreferrer"` を併記する理由
 * Public リポジトリには個人情報を載せない重要性
 
-\---
+---
 
 ## 2026/05/04 (月) - Day 3: AWS S3 静的サイトホスティング
 
@@ -108,9 +111,9 @@ Cloud Resume Challenge プロジェクトの日次開発記録。
 
 * S3 直接エンドポイントは HTTP のため、CloudFront で HTTPS 化が必要
 
-\---
+---
 
-## 2026/05/05 (火) - CloudFront 試行 \& ブロック
+## 2026/05/05 (火) - CloudFront 試行 & ブロック
 
 ### やったこと
 
@@ -128,9 +131,9 @@ Cloud Resume Challenge プロジェクトの日次開発記録。
 
 ### 明日やること
 
-* 工単対応待ち、その間にバックエンド (Lambda + DynamoDB) を進める
+* AWS Support 対応待ち、その間にバックエンド (Lambda + DynamoDB) を進める
 
-\---
+---
 
 ## 2026/05/07 (木) - Day 4: Lambda + DynamoDB バックエンド
 
@@ -139,7 +142,7 @@ Cloud Resume Challenge プロジェクトの日次開発記録。
 * DynamoDB テーブル `cloud-resume-counter` を作成
 
   * パーティションキー: `id` (String)
-  * 初期データ: `{id: "visitor\_count", count: 0}`
+  * 初期データ: `{id: "visitor_count", count: 0}`
 * IAM Role `lambda-resume-counter-role` を作成
 
   * AWSLambdaBasicExecutionRole + AmazonDynamoDBFullAccess
@@ -153,7 +156,7 @@ Cloud Resume Challenge プロジェクトの日次開発記録。
 
 ### 学んだこと
 
-* Lambda の基本構造 (`def lambda\_handler(event, context)`)
+* Lambda の基本構造 (`def lambda_handler(event, context)`)
 * boto3 でのリソースクライアント初期化
 * DynamoDB atomic counter の重要性
 
@@ -168,14 +171,14 @@ Cloud Resume Challenge プロジェクトの日次開発記録。
 
 * Decimal 型 → JSON シリアライズエラー
 
-  * 解決: `int(response\['Attributes']\['count'])` で変換
+  * 解決: `int(response['Attributes']['count'])` で変換
 
 ### 明日やること
 
 * API Gateway を作成して Lambda を HTTP エンドポイント化
 * フロントエンドから API を呼び出して訪問者数を表示
 
-\---
+---
 
 ## 2026/05/08 (金) - Day 5: API Gateway + フロントエンド連携
 
@@ -188,7 +191,7 @@ Cloud Resume Challenge プロジェクトの日次開発記録。
   * Lambda 関数 `cloud-resume-counter` と統合
 * CORS 設定
 
-  * Allow-Origin: `\*` (応急版、本番では絞る予定)
+  * Allow-Origin: `*` (応急版、本番では絞る予定)
   * Allow-Methods: `GET, OPTIONS`
   * Allow-Headers: `content-type`
 * フロントエンド側に訪問者カウンター実装
@@ -225,10 +228,10 @@ Cloud Resume Challenge プロジェクトの日次開発記録。
 End-to-end で動作する Web アプリケーション:
 
 ```
-\[ブラウザ] → \[S3 静的サイト] → JS が fetch → \[API Gateway] → \[Lambda] → \[DynamoDB]
+[ブラウザ] → [S3 静的サイト] → JS が fetch → [API Gateway] → [Lambda] → [DynamoDB]
 ```
 
-\---
+---
 
 ## 2026/05/09 (土) - Day 6: SRE 加分項 (IAM 最小権限 + CloudWatch)
 
@@ -268,7 +271,7 @@ End-to-end で動作する Web アプリケーション:
 * pytest + moto による Lambda 単体テスト
 * GitHub Actions による CI 自動化
 
-\---
+---
 
 ## 2026/05/10 (日) - Day 7: pytest + GitHub Actions
 
@@ -278,8 +281,8 @@ End-to-end で動作する Web アプリケーション:
 
 * `backend/` ディレクトリ構成を作成
 
-  * `backend/lambda/lambda\_function.py` (Lambda コード)
-  * `backend/tests/test\_lambda\_function.py` (テストコード)
+  * `backend/lambda/lambda_function.py` (Lambda コード)
+  * `backend/tests/test_lambda_function.py` (テストコード)
   * `backend/tests/conftest.py` (pytest 共通設定)
 
 #### pytest 単体テスト実装
@@ -304,16 +307,16 @@ End-to-end で動作する Web アプリケーション:
 
 #### その他
 
-* `.gitignore` 作成 (venv, **pycache** 等を除外)
+* `.gitignore` 作成 (venv, `__pycache__` 等を除外)
 * PyCharm Professional に切り替え (JetBrains 学生ライセンス)
 
 ### 学んだこと
 
-* pytest の基本構造 (test\_ プレフィックス、fixture)
+* pytest の基本構造 (test_ プレフィックス、fixture)
 * moto による AWS サービスのモック化
 * フィクスチャー (@pytest.fixture) で共通セットアップ
 * GitHub Actions の YAML 構文
-* ワークフロートリガー (push, pull\_request, paths)
+* ワークフロートリガー (push, pull_request, paths)
 * 依存関係のキャッシング戦略
 
 ### SRE 観点での価値
@@ -338,7 +341,7 @@ End-to-end で動作する Web アプリケーション:
 * 異常系テスト追加 (DynamoDB エラー時)
 * 統合テスト (API Gateway 経由)
 
-\---
+---
 
 ## 2026/05/11 (月) - Day 8: Terraform IaC 化
 
@@ -362,14 +365,14 @@ End-to-end で動作する Web アプリケーション:
 
 #### Phase 3: DynamoDB を IaC 化
 
-* `visitor\_counter` テーブル定義
-* `billing\_mode: PAY\_PER\_REQUEST`
+* `visitor_counter` テーブル定義
+* `billing_mode: PAY_PER_REQUEST`
 
 #### Phase 4: Lambda + IAM を IaC 化
 
 * IAM Role (lambda 信頼ポリシー)
 * IAM Policy (最小権限: `dynamodb:UpdateItem` のみ)
-* Lambda Function (`data archive\_file` で自動 zip 化)
+* Lambda Function (`data archive_file` で自動 zip 化)
 * CloudWatch Logs Group (retention 7 日)
 
 #### 合計 12 個の AWS リソースを IaC 化
@@ -378,8 +381,8 @@ End-to-end で動作する Web アプリケーション:
 
 * Terraform 基本概念 (Provider, Resource, Data, Variables, Outputs)
 * `terraform init / plan / apply / destroy / import`
-* `default\_tags` + `ManagedBy = Terraform` でリソース管理
-* リソース間参照 (`aws\_dynamodb\_table.visitor\_counter.arn`)
+* `default_tags` + `ManagedBy = Terraform` でリソース管理
+* リソース間参照 (`aws_dynamodb_table.visitor_counter.arn`)
 * `terraform import` で既存リソースの取り込み
 
 ### つまずいた点
@@ -402,7 +405,7 @@ End-to-end で動作する Web アプリケーション:
 * `terraform.tfstate` の S3 backend 化 (チーム開発標準)
 * terraform workspace で環境分離
 
-\---
+---
 
 ## 2026/05/12 (火) - Day 9: API Gateway IaC + Cloudflare HTTPS
 
@@ -411,9 +414,9 @@ End-to-end で動作する Web アプリケーション:
 #### Phase 1: API Gateway を IaC 化
 
 * HTTP API 本体 (`cloud-resume-api`)
-* Lambda Integration (AWS\_PROXY)
+* Lambda Integration (AWS_PROXY)
 * Route (`GET /counter`)
-* Stage (`$default`, auto\_deploy)
+* Stage (`$default`, auto_deploy)
 * Lambda Permission
 * 既存リソースを `terraform import` で取り込み
 
@@ -443,15 +446,15 @@ End-to-end で動作する Web アプリケーション:
 ### 最終的なアーキテクチャ
 
 ```
-\[ユーザー] https://zhabc001.me
-   → \[Cloudflare CDN + HTTPS]
-   → \[S3: zhabc001.me]
+[ユーザー] https://zhabc001.me
+   → [Cloudflare CDN + HTTPS]
+   → [S3: zhabc001.me]
 
 JS が動的に呼び出し:
-\[ブラウザ JS]
-   → \[API Gateway]
-   → \[Lambda]
-   → \[DynamoDB]
+[ブラウザ JS]
+   → [API Gateway]
+   → [Lambda]
+   → [DynamoDB]
 ```
 
 ### 学んだこと
@@ -474,7 +477,7 @@ JS が動的に呼び出し:
 * "ベンダーロックイン回避" の視点
 * 旧桶を残す段階的移行戦略
 
-\---
+---
 
 ## 2026/05/13 (水) - Day 10: Alert Fatigue 対策 + README 整理
 
@@ -482,7 +485,7 @@ JS が動的に呼び出し:
 
 #### CloudWatch Alarm の通知設定調整
 
-* OK / INSUFFICIENT\_DATA 通知をオフ
+* OK / INSUFFICIENT_DATA 通知をオフ
 * ALARM 状態のみメール通知に変更
 * "Alert Fatigue" 対策の実践
 
@@ -490,7 +493,7 @@ JS が動的に呼び出し:
 
 * 過去の編集で壊れた Markdown 構造を整理
 * 「Cloudflare HTTPS 化の決断」章節を追加
-* 「Testing \& CI/CD」章節を追加
+* 「Testing & CI/CD」章節を追加
 * 「ディレクトリ構成」章節を追加
 * 4 つのバッジ追加 (Tests, License, Terraform, AWS)
 
@@ -498,7 +501,7 @@ JS が動的に呼び出し:
 
 * 17 リソースの一覧
 * `terraform import` の手順
-* 設計のポイント (default\_tags, リソース間参照等)
+* 設計のポイント (default_tags, リソース間参照等)
 * トラブルシューティング
 
 ### 学んだこと
@@ -513,7 +516,7 @@ JS が動的に呼び出し:
 * README に過去の編集で `#` の連発、重複章節、エスケープエラー等が散在
 * 部分修正より全体書き直しの方が早かった
 
-\---
+---
 
 ## 2026/05/14 (木) - Day 11: 最終チェック + AWS 検証完了の連絡
 
@@ -578,7 +581,202 @@ AWS から検証完了の連絡を受領。
 * 移行プロセス自体も学びになる
 * "段階的なリリース" は実運用でも重要
 
-\---
+
+---
+
+## 2026/05/25 (月) - Day 12: AI Assistant UI 追加
+
+### やったこと
+
+* 既存の履歴書ページに `AI Project Assistant` セクションを追加
+* ナビゲーションに `AI Assistant` へのリンクを追加
+* Bootstrap のデザインに合わせて、以下のクイック質問ボタンを作成
+  * Project Overview
+  * AWS Architecture
+  * Technical Challenges
+  * Cost & Security
+  * 日本語説明
+* Day 1 版として、まずは静的回答を表示するデモを実装
+* 本番 API キーをフロントエンドに置かない方針を決定
+
+### 学んだこと
+
+* まず UI プロトタイプを作り、後からバックエンドを接続する進め方
+* AI 機能では、見た目の実装よりも API キー管理とコスト制御が重要
+* 静的デモでも、ユーザー体験や画面構成を事前に確認できる
+
+### つまずいた点
+
+* HTML 内で `data-answer` と `data-question` の役割が混在し、後続の API 連携時に質問内容が正しく送られない可能性があった
+
+### 改善したこと
+
+* 後続の動的 API 連携に備え、ボタンは `data-question` を使って実際の質問文を渡す設計に変更
+
+---
+
+## 2026/05/26 (火) - Day 13: Mock Lambda API と API Gateway 連携
+
+### やったこと
+
+* AI Assistant 用の Lambda 関数 `ai-assistant-api` を作成
+* API Gateway に `POST /ask` ルートを追加
+* Lambda から固定レスポンスを返す Mock API を実装
+* フロントエンド JavaScript から `/ask` API を呼び出す処理を追加
+* PowerShell の `Invoke-RestMethod` で API Gateway 経由の動作確認を実施
+* CORS 設定を調整し、ローカル開発環境と本番ドメインからのアクセスを検証
+
+### 学んだこと
+
+* 既存の `/counter` API と同じ API Gateway 上に新しいルートを追加できる
+* PowerShell では複数行コマンドの入力方法に注意が必要
+* ブラウザで失敗して PowerShell で成功する場合、CORS や Origin の違いを疑うべき
+* `file://` で直接 HTML を開くと Origin が `null` になることがある
+
+### つまずいた点
+
+* PowerShell で `Invoke-RestMethod` を途中で改行して実行し、URI の解析エラーが発生
+* ローカル表示時に CORS による通信エラーが発生
+
+### 改善したこと
+
+* PowerShell では一行コマンドで API をテスト
+* API Gateway / Lambda 側の CORS 設定に `https://zhabc001.me` とローカル開発用 Origin を追加
+* フロントエンドでは通信エラー時のメッセージを表示するようにした
+
+---
+
+## 2026/05/27 (水) - Day 14: Gemini API 連携
+
+### やったこと
+
+* Gemini API キーを取得し、Lambda の環境変数 `GEMINI_API_KEY` として設定
+* フロントエンドから直接 Gemini API を呼び出さず、API Gateway + Lambda 経由で呼び出す構成にした
+* Python 標準ライブラリ `urllib` を使って Gemini API の `generateContent` を呼び出し
+* 入力文字数を 500 文字以内に制限
+* 出力トークン数を制限し、API コストを抑える設定を追加
+* 日本語・英語・中国語の質問に対応するプロンプトを作成
+* `このプロジェクト` が Cloud Resume Challenge を指すようにプロンプトを調整
+
+### 学んだこと
+
+* API キーはフロントエンドではなく、Lambda の環境変数で管理するべき
+* AI Assistant では、回答範囲を狭くしすぎると正常な質問まで拒否される
+* Prompt Engineering では、`このプロジェクト` のような曖昧な表現も明示的に定義する必要がある
+* Lambda コンソールのテストとブラウザからの実行では、入力内容や Origin が異なるため挙動が変わることがある
+
+### つまずいた点
+
+* Gemini が「日本語でこのプロジェクトを説明してください」を無関係な質問と誤判定
+* フロントエンドのボタンから送信される内容が `日本語説明` のような短いラベルになっていた
+* Python のインデントミスにより `unexpected indent` が発生
+
+### 改善したこと
+
+* ボタンには表示ラベルではなく、`data-question` に具体的な質問文を設定
+* JavaScript 側で `data-question` がない場合は警告を出すよう変更
+* `call_gemini()` 関数内の `prompt` と `payload` のインデントを修正
+* Lambda のタイムアウトとメモリ設定を見直し、初回実行時の安定性を改善
+
+---
+
+## 2026/05/28 (木) - Day 15: DynamoDB ログ + 利用上の注意 + ドキュメント更新
+
+### やったこと
+
+* AI Assistant のリクエストログ用 DynamoDB テーブルを追加
+* Lambda 実行時に以下のリクエストメタデータを記録
+  * Request ID
+  * アクセス時刻
+  * ハッシュ化された IP アドレス
+  * User-Agent
+  * 質問文字数
+  * リクエスト状態
+  * TTL による有効期限
+* IP アドレスはそのまま保存せず、ソルト付きハッシュとして保存
+* 質問本文はログに保存しない方針にした
+* DynamoDB TTL を設定し、一定期間後にログを自動削除する設計にした
+* Web ページに AI Assistant の利用上の注意を追加
+* README.md と DEVLOG.md を AI Assistant 追加に合わせて更新
+
+### 学んだこと
+
+* AI 機能では、モデル呼び出しだけでなく不正利用防止とコスト管理が重要
+* IP アドレスを直接保存せず、ハッシュ化することでプライバシーに配慮できる
+* 質問本文を保存しないことで、利用者が誤って個人情報を入力した場合のリスクを下げられる
+* DynamoDB TTL を使うことで、ログを一定期間後に自動削除できる
+* S3 直接アクセスと独自ドメイン経由では Origin が異なるため、CORS の挙動も変わる
+
+### つまずいた点
+
+* S3 直接アクセスでは訪問者数が `N/A` になることがあった
+  * 原因: 正式ドメイン以外の Origin が CORS で許可されていなかった
+  * 判断: ユーザーには独自ドメイン経由でアクセスしてもらう設計のため、正式ドメインを優先
+* 初回アクセス直後に AI Assistant が一時的に `APIエラー` を返すことがあった
+  * 原因候補: Lambda cold start、Gemini API 応答待ち、タイムアウト設定
+  * 改善: Lambda の timeout と memory を調整
+
+### SRE / セキュリティ観点での価値
+
+* フロントエンドに API キーを公開しない設計
+* リクエストログによる不正利用検知の土台
+* 入力文字数と出力トークン数の制限によるコスト制御
+* TTL によるログライフサイクル管理
+* 個人情報を保存しない最小限ログ設計
+
+### 今後の改善点
+
+* IP ハッシュ + 日付による日次リクエスト制限
+* DynamoDB による回答キャッシュ
+* CloudWatch Alarm による異常な API 呼び出し検知
+* Cloudflare Turnstile による bot 対策
+* AI Assistant 関連リソースの Terraform 管理への統合
+
+---
+
+## AI Assistant 拡張の振り返り
+
+### 追加した成果物
+
+* Web サイト上の AI Project Assistant セクション
+* API Gateway `POST /ask`
+* Lambda `ai-assistant-api`
+* Gemini API 連携
+* DynamoDB リクエストログ
+* 利用上の注意表示
+* README / DEVLOG の更新
+
+### 特に意識した点
+
+**セキュリティ**:
+
+* Gemini API キーをフロントエンドに置かない
+* API キーは Lambda 環境変数で管理
+* CORS を本番ドメイン中心に制限
+* 質問本文と生 IP アドレスを保存しない
+
+**コスト管理**:
+
+* 低コストモデルを使用
+* 入力文字数を 500 文字以内に制限
+* 出力トークン数を制限
+* ログを TTL で自動削除
+* 今後はキャッシュと日次リクエスト制限を追加予定
+
+**運用性**:
+
+* PowerShell、Lambda コンソール、ブラウザの 3 つの経路で動作確認
+* CloudWatch Logs によるエラー確認
+* Mock API → Gemini API → ログ追加という段階的リリース
+
+### 面接で説明できるポイント
+
+* AI 機能を単に追加しただけでなく、API キー管理、CORS、ログ、コスト管理まで考慮した
+* Serverless 構成で既存の Cloud Resume Challenge を拡張した
+* フロントエンド、API Gateway、Lambda、Gemini API、DynamoDB の end-to-end 構成を実装した
+* Privacy by Design の考え方に基づき、保存するログを最小限にした
+
+---
 
 ## プロジェクト全体の振り返り (5/2 - 5/14)
 
@@ -598,6 +796,7 @@ AWS から検証完了の連絡を受領。
 * Lambda Function (Python 3.12)
 * DynamoDB Atomic Counter
 * API Gateway HTTP API
+* AI Assistant 用 Lambda + Gemini API 連携
 
 #### インフラ
 
@@ -611,6 +810,8 @@ AWS から検証完了の連絡を受領。
 * CloudWatch Logs (Lambda 実行ログ, 7 日保持)
 * CloudWatch Alarm (Errors > 0 監視 + SNS メール通知)
 * IAM 最小権限ポリシー
+* AI Assistant のリクエストメタデータ記録
+* DynamoDB TTL によるログ自動削除
 
 #### テスト・CI/CD
 
@@ -631,6 +832,7 @@ AWS から検証完了の連絡を受領。
 * Terraform による IaC 実践 (terraform import 含む)
 * pytest + GitHub Actions による CI/CD
 * Cloudflare による HTTPS 化と CDN
+* Gemini API を利用した AI Assistant 実装
 
 **SRE 観点**:
 
@@ -641,6 +843,8 @@ AWS から検証完了の連絡を受領。
 * Shift-left のテスト戦略
 * Infrastructure as Code
 * Risk Management (締切前の変更回避)
+* AI API の安全なバックエンド連携
+* プライバシーに配慮したログ設計
 
 **ソフトスキル**:
 
@@ -654,6 +858,9 @@ AWS から検証完了の連絡を受領。
 
 **短期 (1 ヶ月以内)**:
 
+* AI Assistant の回答キャッシュ追加
+* IP ハッシュ + 日付による簡易レート制限
+* AI Assistant 関連リソースの Terraform 管理
 * CloudFront による AWS ネイティブ HTTPS 化
 * API Gateway を含めた完全な Terraform IaC 管理
 * pytest-cov によるカバレッジ計測
