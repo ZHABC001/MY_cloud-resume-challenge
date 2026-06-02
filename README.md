@@ -1,9 +1,11 @@
 # Cloud Resume Challenge - SRE Edition
 
-!\[Tests](https://github.com/ZHABC001/MY\_cloud-resume-challenge/actions/workflows/test.yml/badge.svg)
-!\[License](https://img.shields.io/badge/license-MIT-blue.svg)
-!\[Terraform](https://img.shields.io/badge/Terraform-Managed-7B42BC.svg)
-!\[AWS](https://img.shields.io/badge/AWS-S3%20%7C%20Lambda%20%7C%20DynamoDB-FF9900.svg)
+![Tests](https://github.com/ZHABC001/MY_cloud-resume-challenge/actions/workflows/test.yml/badge.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Terraform](https://img.shields.io/badge/Terraform-Managed-7B42BC.svg)
+![AWS](https://img.shields.io/badge/AWS-S3%20%7C%20Lambda%20%7C%20DynamoDB-FF9900.svg)
+
+27卒 SRE / インフラエンジニア志望者向けのクラウドポートフォリオです。
 
 27卒 SRE / インフラエンジニア志望者向けのクラウドポートフォリオです。
 
