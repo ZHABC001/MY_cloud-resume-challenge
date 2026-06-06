@@ -145,11 +145,11 @@ resource "aws_dynamodb_table" "visitor_counter" {
 
   # ポイントインタイムリカバリ (PITR) - 推奨
   point_in_time_recovery {
-    enabled = false  # 応急版では無効、本番では有効化推奨
+    enabled = false # 応急版では無効、本番では有効化推奨
   }
 
   # 削除保護 - SRE ベストプラクティス
-  deletion_protection_enabled = false  # 開発フェーズでは false、本番では true
+  deletion_protection_enabled = false # 開発フェーズでは false、本番では true
 }
 
 # ===========================================
@@ -215,16 +215,16 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
 
 # Lambda Function
 resource "aws_lambda_function" "resume_counter" {
-  function_name    = var.lambda_function_name
-  role             = aws_iam_role.lambda_resume_counter.arn
-  handler          = "lambda_function.lambda_handler"
-  runtime          = "python3.12"
+  function_name = var.lambda_function_name
+  role          = aws_iam_role.lambda_resume_counter.arn
+  handler       = "lambda_function.lambda_handler"
+  runtime       = "python3.12"
 
   # ローカルの zip ファイルから関数コードをアップロード
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
-  timeout     = 3
+  timeout     = 20
   memory_size = 128
 
   # 依存リソース
@@ -237,7 +237,7 @@ resource "aws_lambda_function" "resume_counter" {
 # CloudWatch Logs グループ (Lambda 用)
 resource "aws_cloudwatch_log_group" "lambda_logs" {
   name              = "/aws/lambda/${aws_lambda_function.resume_counter.function_name}"
-  retention_in_days = 7  # コスト最適化のため 7 日間
+  retention_in_days = 7 # コスト最適化のため 7 日間
 }
 
 # ===========================================
@@ -251,10 +251,24 @@ resource "aws_apigatewayv2_api" "counter_api" {
   description   = "訪問者カウンター用の HTTP API"
 
   cors_configuration {
-    allow_origins = ["*"]
-    allow_methods = ["GET", "OPTIONS"]
-    allow_headers = ["content-type"]
-    max_age       = 0
+    allow_origins = [
+      "https://zhabc001.me",
+      "http://localhost:5500",
+      "http://127.0.0.1:5500",
+      "http://localhost:63342"
+    ]
+
+    allow_methods = [
+      "GET",
+      "POST",
+      "OPTIONS"
+    ]
+
+    allow_headers = [
+      "Content-Type"
+    ]
+
+    max_age = 300
   }
 }
 
@@ -263,8 +277,8 @@ resource "aws_apigatewayv2_integration" "lambda" {
   api_id           = aws_apigatewayv2_api.counter_api.id
   integration_type = "AWS_PROXY"
 
-  integration_uri    = aws_lambda_function.resume_counter.invoke_arn
-  integration_method = "POST"
+  integration_uri        = aws_lambda_function.resume_counter.invoke_arn
+  integration_method     = "POST"
   payload_format_version = "2.0"
 }
 

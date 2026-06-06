@@ -22,6 +22,12 @@ terraform/*.tfvars
 terraform/*.tfvars.json
 terraform/lambda_function.zip
 *.tfplan
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log
+*.zip
 
 # IDE
 .vscode/

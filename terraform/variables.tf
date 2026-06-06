@@ -41,3 +41,25 @@ variable "lambda_function_name" {
   type        = string
   default     = "cloud-resume-counter"
 }
+
+variable "gemini_api_key" {
+  description = "Gemini API key for AI Assistant"
+  type        = string
+  sensitive   = true
+}
+
+variable "ip_hash_salt" {
+  description = "Salt for hashing IP addresses"
+  type        = string
+  sensitive   = true
+}
+
+variable "allowed_origins" {
+  description = "Allowed CORS origins for AI Assistant"
+  type        = list(string)
+  default = [
+    "https://zhabc001.me",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500"
+  ]
+}
