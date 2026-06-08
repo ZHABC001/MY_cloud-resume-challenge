@@ -331,9 +331,6 @@ Gemini API キーは HTML / JavaScript には記述せず、Lambda の環境変�
 
 ### 今後 Terraform 化予定
 
-* AI Assistant Lambda
-* `/ask` API Gateway route / integration
-* AI Assistant 用 DynamoDB log table
 * Gemini API キー用の Secrets Manager 管理
 * IP ベースの日次制限用 DynamoDB table
 
